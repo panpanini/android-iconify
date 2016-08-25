@@ -1,10 +1,13 @@
 package com.joanzapata.iconify;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
+
 import android.graphics.*;
 import android.graphics.drawable.Drawable;
 import android.text.TextPaint;
 import android.util.TypedValue;
+
 import com.joanzapata.iconify.internal.IconFontDescriptorWrapper;
 
 import static android.util.TypedValue.COMPLEX_UNIT_DIP;
@@ -33,6 +36,7 @@ public class IconDrawable extends Drawable {
     private int size = -1;
 
     private int alpha = 255;
+    private ColorStateList colorStateList;
 
     /**
      * Create an IconDrawable.
@@ -130,7 +134,13 @@ public class IconDrawable extends Drawable {
      * @return The current IconDrawable for chaining.
      */
     public IconDrawable colorRes(int colorRes) {
-        paint.setColor(context.getResources().getColor(colorRes));
+        colorStateList = context.getResources().getColorStateList(colorRes);
+        if (colorStateList == null) {
+          // Could be just a standard color, so try that next
+          int color = context.getResources().getColor(colorRes);
+          colorStateList = ColorStateList.valueOf(color);
+        }
+        paint.setColor(colorStateList.getColorForState(getState(), colorStateList.getDefaultColor()));
         invalidateSelf();
         return this;
     }
@@ -176,10 +186,20 @@ public class IconDrawable extends Drawable {
 
     @Override
     public boolean setState(int[] stateSet) {
+
+      if (colorStateList == null || !colorStateList.isStateful()) {
         int oldValue = paint.getAlpha();
         int newValue = isEnabled(stateSet) ? alpha : alpha / 2;
         paint.setAlpha(newValue);
         return oldValue != newValue;
+      } else {
+        int oldColor = paint.getColor();
+        int newColor = colorStateList.getColorForState(state, oldColor);
+        paint.setColor(newColor);
+
+        return oldColor != newColor;
+      }
+
     }
 
     @Override
