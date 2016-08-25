@@ -185,11 +185,11 @@ public class IconDrawable extends Drawable {
     }
 
     @Override
-    public boolean setState(int[] stateSet) {
+    public boolean setState(int[] state) {
 
       if (colorStateList == null || !colorStateList.isStateful()) {
         int oldValue = paint.getAlpha();
-        int newValue = isEnabled(stateSet) ? alpha : alpha / 2;
+        int newValue = isEnabled(state) ? alpha : alpha / 2;
         paint.setAlpha(newValue);
         return oldValue != newValue;
       } else {

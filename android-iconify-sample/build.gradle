@@ -22,16 +22,6 @@ android {
         versionName VERSION_NAME
     }
 
-    def password = project.hasProperty('ICONIFY_SAMPLE_KEYSTORE_PASSWORD') ?
-            project.property('ICONIFY_SAMPLE_KEYSTORE_PASSWORD') : ''
-    signingConfigs {
-        release {
-            storeFile file("keystore")
-            storePassword password
-            keyAlias "android-iconify"
-            keyPassword password
-        }
-    }
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_6
@@ -41,7 +31,6 @@ android {
     buildTypes {
         release {
             minifyEnabled false
-            signingConfig signingConfigs.release
         }
     }
 }
